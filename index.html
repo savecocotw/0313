@@ -22,12 +22,7 @@
     /* Banner Wrapper 與商品框同寬 */
     .banner-wrapper {
       width: calc(50% - 10px);
-      margin: 0 0 20px 0;
-    }
-    @media (max-width: 768px) {
-      .banner-wrapper {
-        width: 100%;
-      }
+      margin-bottom: 20px;
     }
     /* 輪播圖 */
     .carousel { 
@@ -68,16 +63,18 @@
     .product .share button {
       background: #007bff; color: #fff; border: none; padding: 5px 8px; margin-right: 5px; cursor: pointer;
     }
-    /* 購買紀錄框架 (寬度與商品框一致，左對齊) */
+    /* 購買紀錄容器（獨立一個容器，其寬度與商品框架總寬度相同） */
+    .records-container {
+      width: calc(100% - 20px); /* 商品1+商品2的總寬度 */
+      margin: 20px auto; /* 置中並與上方留間距 */
+    }
     .purchase-records {
       background: #fff; 
       border: 1px solid #ddd; 
       padding: 10px; 
       overflow: hidden;
-      width: calc(50% - 10px);
-      margin: 20px 0;  /* 左側對齊 */
-      /* 固定高度顯示約 10 筆紀錄（視字體大小調整高度） */
-      height: 220px;
+      width: 100%;
+      height: 220px; /* 固定高度，約可顯示10筆紀錄 */
     }
     .purchase-records ul { list-style: none; }
     .purchase-records li {
@@ -101,179 +98,6 @@
     }
     /* 響應式 */
     @media (max-width: 768px) {
-      .product, .purchase-records, .banner-wrapper { width: 100%; }
+      .product, .banner-wrapper, .records-container { width: 100%; }
     }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>全球社群平台帳號購物網</h1>
-  </header>
-  <div class="container">
-    <!-- Banner 輪播 (獨立一列且與商品框同寬) -->
-    <div class="banner-wrapper">
-      <div class="carousel">
-        <div class="slides">
-          <img src="banner1.jpg" alt="Banner 1">
-          <img src="banner2.jpg" alt="Banner 2">
-        </div>
-      </div>
-    </div>
-    <!-- 商品區塊 -->
-    <div class="products">
-      <!-- 商品 1 -->
-      <div class="product" id="product1">
-        <h3>Facebook 帳號</h3>
-        <p>提供優質 Facebook 社群平台帳號，適用於各種行銷需求。</p>
-        <div class="price">NT$350</div>
-        <button class="buy-btn">購買</button>
-        <div class="share">
-          分享:
-          <button onclick="shareProduct('Facebook 帳號')"><i class="fab fa-facebook-f"></i></button>
-          <button onclick="shareProduct('Facebook 帳號')"><i class="fab fa-twitter"></i></button>
-          <button onclick="shareProduct('Facebook 帳號')"><i class="fab fa-line"></i></button>
-        </div>
-      </div>
-      <!-- 商品 2 -->
-      <div class="product" id="product2">
-        <h3>Instagram 帳號</h3>
-        <p>專業 Instagram 帳號，助您快速提升社群人氣。</p>
-        <div class="price">NT$350</div>
-        <button class="buy-btn">購買</button>
-        <div class="share">
-          分享:
-          <button onclick="shareProduct('Instagram 帳號')"><i class="fab fa-facebook-f"></i></button>
-          <button onclick="shareProduct('Instagram 帳號')"><i class="fab fa-twitter"></i></button>
-          <button onclick="shareProduct('Instagram 帳號')"><i class="fab fa-line"></i></button>
-        </div>
-      </div>
-    </div>
-    <!-- 購買紀錄區塊 (寬度與商品框一致，左側對齊) -->
-    <div class="purchase-records">
-      <ul id="recordList"></ul>
-    </div>
-  </div>
-  <footer>
-    <div>&copy; 2025 全球社群平台帳號購物網 版權所有</div>
-    <div class="footer-counter">訪問計數: <span id="counter">0</span></div>
-  </footer>
-  <!-- Messenger 客服圖標 -->
-  <div class="messenger-icon" onclick="openMessenger()">
-    <i class="fab fa-facebook-messenger"></i>
-  </div>
-
-  <script>
-    /* 輪播功能 */
-    let slideIndex = 0;
-    const slides = document.querySelector('.slides');
-    const totalSlides = slides.children.length;
-    function showNextSlide() {
-      slideIndex = (slideIndex + 1) % totalSlides;
-      slides.style.transform = 'translateX(' + (-slideIndex * 100) + '%)';
-    }
-    setInterval(showNextSlide, 3000);
-
-    /* 分享功能 */
-    function shareProduct(productName) {
-      const shareText = '看看這個產品：' + productName;
-      if(navigator.share) {
-        navigator.share({
-          title: productName,
-          text: shareText,
-          url: window.location.href
-        }).then(() => {
-          console.log('分享成功');
-        }).catch((error) => {
-          console.error('分享失敗', error);
-        });
-      } else {
-        alert('您的瀏覽器不支援分享功能');
-      }
-    }
-
-    /* 購買紀錄產生 */
-    function randomDate(start, end) {
-      const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-      const yyyy = date.getFullYear();
-      let mm = date.getMonth() + 1;
-      let dd = date.getDate();
-      mm = mm < 10 ? '0' + mm : mm;
-      dd = dd < 10 ? '0' + dd : dd;
-      return '' + yyyy + mm + dd;
-    }
-    function randomUsername(existing) {
-      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      let username;
-      do {
-        username = '';
-        for (let i = 0; i < 8; i++) {
-          username += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-      } while(existing.has(username));
-      existing.add(username);
-      return username;
-    }
-    function generateRecords() {
-      const records = [];
-      const usernames = new Set();
-      for (let i = 1; i <= 164; i++) {
-        // 隨機日期範圍：2020/01/01 ~ 2025/12/31
-        const dateStr = randomDate(new Date(2020, 0, 1), new Date(2025, 11, 31));
-        // 隨機選擇產品：LINE 帳號 或 TELEGRAM 帳號
-        const product = Math.random() > 0.5 ? 'LINE帳號' : 'TELEGRAM帳號';
-        const price = product === 'LINE帳號' ? 350 : 150;
-        const username = randomUsername(usernames);
-        records.push({
-          seq: i,
-          date: dateStr,
-          username: username,
-          product: product,
-          price: price
-        });
-      }
-      // 按日期降序排序（最新日期在前）
-      records.sort((a, b) => b.date.localeCompare(a.date));
-      return records;
-    }
-    const records = generateRecords();
-    const recordList = document.getElementById('recordList');
-    // 序號格式化：三位數
-    function formatSeq(num) {
-      return num.toString().padStart(3, '0');
-    }
-    // 將 164 筆購買紀錄全部列出
-    records.forEach((record, index) => {
-      const li = document.createElement('li');
-      li.textContent = formatSeq(index + 1) + '. ' + record.date + ' --- ' + record.username + ' --- ' + record.product + ' --- ' + record.price;
-      recordList.appendChild(li);
-    });
-
-    /* 購買紀錄自動滾動 */
-    const recordContainer = document.querySelector('.purchase-records');
-    function autoScroll() {
-      // 若滾動到最底部則重置
-      if(recordContainer.scrollTop >= recordList.scrollHeight - recordContainer.clientHeight) {
-        recordContainer.scrollTop = 0;
-      } else {
-        recordContainer.scrollTop += 1;
-      }
-    }
-    setInterval(autoScroll, 50);
-
-    /* 訪問計數器 (使用 localStorage 模擬) */
-    function updateCounter() {
-      let count = localStorage.getItem('visitCount') || 0;
-      count = parseInt(count) + 1;
-      localStorage.setItem('visitCount', count);
-      document.getElementById('counter').textContent = count;
-    }
-    updateCounter();
-
-    /* Messenger 客服功能 */
-    function openMessenger() {
-      // 請將此處連結替換為實際的 Messenger 粉絲專頁連結
-      window.open('https://m.me/yourpage', '_blank');
-    }
-  </script>
-</body>
-</html>
+  </st
