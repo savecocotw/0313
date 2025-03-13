@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>購物網站</title>
+  <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
+    /* 基本樣式 */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -16,10 +18,10 @@
       text-align: center;
       padding: 20px;
       background-color: #333;
-      color: white;
+      color: #fff;
     }
+    /* BANNER 輪播 */
     .carousel {
-      position: relative;
       width: 100%;
       max-width: 1200px;
       margin: 20px auto;
@@ -28,7 +30,9 @@
     .carousel img {
       width: 100%;
       height: auto;
+      display: block;
     }
+    /* 商品區 */
     .products {
       display: flex;
       justify-content: space-around;
@@ -38,45 +42,52 @@
     }
     .product {
       width: 45%;
-      box-sizing: border-box;
-      padding: 15px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      padding: 15px;
       text-align: center;
     }
     .product img {
       width: 100%;
       height: auto;
     }
-    .product .price {
+    .price {
       font-size: 20px;
       color: #333;
       margin-top: 10px;
     }
-    .product .desc {
+    .desc {
       font-size: 14px;
       color: #777;
       margin-top: 10px;
     }
     .product button {
       margin-top: 15px;
-      padding: 10px;
+      padding: 10px 20px;
       background-color: #28a745;
-      color: white;
+      color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
+    /* 購買紀錄區
+       設定固定高度以顯示約10條紀錄，
+       利用 CSS transform 反轉容器，再由 JavaScript 自動滾動使紀錄呈現由上往下的效果 */
     .purchase-records {
       width: 100%;
-      height: 300px;
-      padding: 20px;
+      height: 300px;  /* 視實際行高調整 */
+      margin: 20px auto;
       background-color: #f8f8f8;
-      box-sizing: border-box;
-      margin-top: 20px;
       border-top: 1px solid #ccc;
-      overflow-y: scroll;
-      direction: ltr; /* 讓滾動是由上往下 */
+      overflow: hidden;
+      position: relative;
+      box-sizing: border-box;
+      transform: scaleY(-1);  /* 反轉容器 */
+    }
+    .records-wrapper {
+      position: absolute;
+      top: 0;
+      width: 100%;
     }
     .record {
       padding: 10px;
@@ -84,10 +95,12 @@
       margin: 5px 0;
       border: 1px solid #ddd;
       border-radius: 5px;
+      transform: scaleY(-1);  /* 反轉回來，文字正向 */
     }
+    /* 頁腳 */
     .footer {
       background-color: #333;
-      color: white;
+      color: #fff;
       text-align: center;
       padding: 10px;
       margin-top: 20px;
@@ -96,6 +109,7 @@
       margin-top: 10px;
       font-size: 16px;
     }
+    /* Messenger 客服圖標 */
     .messenger-icon {
       position: fixed;
       right: 20px;
@@ -103,7 +117,7 @@
       background-color: #0078ff;
       border-radius: 50%;
       padding: 15px;
-      color: white;
+      color: #fff;
       font-size: 20px;
       cursor: pointer;
     }
@@ -119,11 +133,12 @@
   </style>
 </head>
 <body>
+  <!-- 頁首 -->
   <div class="header">
     <h1>一頁式購物網站</h1>
   </div>
 
-  <!-- BANNER -->
+  <!-- BANNER 輪播圖 -->
   <div class="carousel">
     <img src="banner1.jpg" alt="Banner 1">
     <img src="banner2.jpg" alt="Banner 2">
@@ -145,10 +160,11 @@
     </div>
   </div>
 
-  <!-- 購買紀錄 -->
+  <!-- 購買紀錄區 -->
   <div class="purchase-records" id="purchaseRecords">
-    <h3>購買紀錄</h3>
-    <!-- 購買紀錄會自動滾動顯示 -->
+    <div class="records-wrapper" id="recordsWrapper">
+      <!-- 164筆購買紀錄將會在這裡產生 -->
+    </div>
   </div>
 
   <!-- 頁腳 -->
@@ -157,66 +173,95 @@
     <div class="counter" id="visitorCount"></div>
   </div>
 
-  <!-- Messenger客服圖標 -->
+  <!-- Messenger 客服圖標 -->
   <div class="messenger-icon">
     <span>📱</span>
   </div>
 
   <script>
-    // 購買紀錄資料生成
+    // 產生不重複的隨機帳號名 (8碼字母數字組合)
+    function generateUniqueUsername(existing) {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let username;
+      do {
+        username = '';
+        const length = 8;
+        for (let i = 0; i < length; i++) {
+          username += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+      } while(existing.has(username));
+      existing.add(username);
+      return username;
+    }
+
+    // 生成 164 筆購買紀錄，序號為三位數，日期隨機，並依日期排序(最新在前)
     function generateRecords() {
       const products = ["LINE帳號", "TELEGRAM帳號"];
-      const users = ["savecocotw", "andyliu", "hello5432", "xiaomeng", "tonyblaze", "john123", "janeDoe", "carter51", "lucy_boy", "maxwells"];
+      let existingUsernames = new Set();
       let records = [];
       for (let i = 0; i < 164; i++) {
-        const date = new Date();
-        date.setFullYear(2020 + Math.floor(Math.random() * 5)); // 隨機年份
-        date.setMonth(Math.floor(Math.random() * 12)); // 隨機月份
-        date.setDate(Math.floor(Math.random() * 28) + 1); // 隨機日期
-        const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
-        const user = users[Math.floor(Math.random() * users.length)];
-        const product = products[Math.floor(Math.random() * products.length)];
-        const price = product === "LINE帳號" ? 350 : 150;
-        records.push(`${i+1}. ${formattedDate} --- ${user} --- ${product} --- ${price}`);
+        let date = new Date();
+        // 隨機產生 2020 到 2024 年的日期
+        date.setFullYear(2020 + Math.floor(Math.random() * 5));
+        date.setMonth(Math.floor(Math.random() * 12));
+        date.setDate(Math.floor(Math.random() * 28) + 1);
+        let formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
+        let username = generateUniqueUsername(existingUsernames);
+        let product = products[Math.floor(Math.random() * products.length)];
+        let price = product === "LINE帳號" ? 350 : 150;
+        let serial = (i + 1).toString().padStart(3, '0');  // 三位數序號
+        records.push(`${serial}.${formattedDate} --- ${username} --- ${product} --- ${price}`);
       }
-      return records.sort((a, b) => b.split(' --- ')[0].localeCompare(a.split(' --- ')[0])); // 根據時間排序
+      // 依日期排序：從第5個字元開始取8個字元（即日期部分），數值較大的排在前面
+      records.sort((a, b) => {
+        let dateA = parseInt(a.substring(4, 12));
+        let dateB = parseInt(b.substring(4, 12));
+        return dateB - dateA;
+      });
+      return records;
     }
 
-    // 顯示購買紀錄
+    // 將生成的購買紀錄全部插入 records-wrapper 中
     function displayRecords() {
       const records = generateRecords();
-      const recordsContainer = document.getElementById("purchaseRecords");
+      const wrapper = document.getElementById("recordsWrapper");
       records.forEach(record => {
-        const div = document.createElement("div");
-        div.classList.add("record");
+        let div = document.createElement("div");
+        div.className = "record";
         div.innerText = record;
-        recordsContainer.appendChild(div);
+        wrapper.appendChild(div);
       });
-      
-      // 讓購買紀錄自動滾動
-      let scrollHeight = recordsContainer.scrollHeight;
-      recordsContainer.scrollTop = scrollHeight;
-      
-      // 每次新增資料後都會調用這個，讓它保持滾動
-      setTimeout(() => {
-        recordsContainer.scrollTop = scrollHeight;
-      }, 50);
     }
 
-    // 訪問計數器
+    // 自動滾動購買紀錄：利用 setInterval 持續更新 container 的 scrollTop
+    // 因 purchase-records 容器已反轉 (scaleY(-1))，
+    // 正常增加 scrollTop 會使內容視覺上由上往下移動
+    function startAutoScroll() {
+      const container = document.getElementById("purchaseRecords");
+      const wrapper = document.getElementById("recordsWrapper");
+      let speed = 1; // 每次滾動 1 像素
+      setInterval(() => {
+        if (container.scrollTop < (wrapper.offsetHeight - container.clientHeight)) {
+          container.scrollTop += speed;
+        } else {
+          container.scrollTop = 0;
+        }
+      }, 20);
+    }
+
+    // 簡易訪問計數器 (每分鐘更新一次)
     let visitCount = 0;
     function updateVisitorCount() {
-      visitCount += 1;
+      visitCount++;
       document.getElementById("visitorCount").innerText = `網站訪問次數：${visitCount}`;
     }
 
-    // 初始化
     window.onload = () => {
       displayRecords();
+      startAutoScroll();
       updateVisitorCount();
-      setInterval(updateVisitorCount, 60000); // 每分鐘更新一次訪問次數
+      setInterval(updateVisitorCount, 60000); // 每分鐘更新一次計數
     };
   </script>
-
 </body>
 </html>
