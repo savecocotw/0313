@@ -27,6 +27,31 @@
       right: 20px;
       z-index: 9999;
     }
+	 /* 購買紀錄滾動區塊 */
+    .purchase-records {
+      height: 200px; /* 限制高度 */
+      overflow: hidden;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .purchase-records ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      position: absolute;
+      bottom: 0;
+    }
+
+    .purchase-records li {
+      padding: 5px 10px;
+      border-bottom: 1px solid #ddd;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -110,6 +135,33 @@
       localStorage.setItem('visitCount', 1);
       document.getElementById('visitor-counter').textContent = 1;
     }
+	
+	 // 生成 100 條購買紀錄
+    const purchaseData = [];
+    const accountTypes = ["LINE帳號", "TELEGRAM帳號"];
+    for (let i = 1; i <= 100; i++) {
+      let username = "user" + Math.floor(Math.random() * 10000);
+      let accountType = accountTypes[Math.floor(Math.random() * accountTypes.length)];
+      purchaseData.push(`${i}. ${username} --- ${accountType} --- 350`);
+    }
+
+    // 動態插入購買紀錄
+    const purchaseList = document.getElementById('purchase-list');
+    purchaseData.forEach(record => {
+      let li = document.createElement('li');
+      li.textContent = record;
+      purchaseList.appendChild(li);
+    });
+
+    // 購買紀錄滾動效果
+    function scrollRecords() {
+      const first = purchaseList.firstElementChild;
+      if (first) {
+        purchaseList.appendChild(first.cloneNode(true));
+        purchaseList.removeChild(first);
+      }
+    }
+    setInterval(scrollRecords, 1500);
   </script>
 
   <!-- 載入 Bootstrap JS 及相依的 jQuery 和 Popper.js -->
