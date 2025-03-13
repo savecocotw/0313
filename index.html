@@ -76,7 +76,7 @@
       margin-top: 20px;
       border-top: 1px solid #ccc;
       overflow-y: scroll;
-      direction: rtl; /* 讓滾動是由下往上 */
+      direction: ltr; /* 讓滾動是由上往下 */
     }
     .record {
       padding: 10px;
@@ -192,7 +192,15 @@
         div.innerText = record;
         recordsContainer.appendChild(div);
       });
-      recordsContainer.scrollTop = recordsContainer.scrollHeight; // 滾動到底部
+      
+      // 讓購買紀錄自動滾動
+      let scrollHeight = recordsContainer.scrollHeight;
+      recordsContainer.scrollTop = scrollHeight;
+      
+      // 每次新增資料後都會調用這個，讓它保持滾動
+      setTimeout(() => {
+        recordsContainer.scrollTop = scrollHeight;
+      }, 50);
     }
 
     // 訪問計數器
