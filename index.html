@@ -1,186 +1,214 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>一頁式購物網站</title>
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png">
-  
-  <!-- 載入 Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>購物網站</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
-    /* 固定右下角的 LINE 客服圖標 */
-    .line-customer-service {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-
-    /* 購買紀錄滾動區塊 */
-    .purchase-records {
-      height: 200px;
-      overflow: hidden;
-      background: #f8f9fa;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-      margin-top: 20px;
+    .header {
+      text-align: center;
+      padding: 20px;
+      background-color: #333;
+      color: white;
+    }
+    .carousel {
       position: relative;
       width: 100%;
+      max-width: 1200px;
+      margin: 20px auto;
+      overflow: hidden;
     }
-
-    .purchase-records ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      position: absolute;
-      bottom: 0;
+    .carousel img {
       width: 100%;
+      height: auto;
     }
-
-    .purchase-records li {
-      padding: 5px 10px;
-      border-bottom: 1px solid #ddd;
-      white-space: nowrap;
-      font-size: 14px;
+    .products {
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 20px;
+      gap: 20px;
     }
-
-    .time {
-      color: gray;
-      font-size: 12px;
+    .product {
+      width: 45%;
+      box-sizing: border-box;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .product img {
+      width: 100%;
+      height: auto;
+    }
+    .product .price {
+      font-size: 20px;
+      color: #333;
+      margin-top: 10px;
+    }
+    .product .desc {
+      font-size: 14px;
+      color: #777;
+      margin-top: 10px;
+    }
+    .product button {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .purchase-records {
+      width: 100%;
+      height: 300px;
+      padding: 20px;
+      background-color: #f8f8f8;
+      box-sizing: border-box;
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      overflow-y: scroll;
+      direction: rtl; /* 讓滾動是由下往上 */
+    }
+    .record {
+      padding: 10px;
+      background-color: #fff;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+    }
+    .counter {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    .messenger-icon {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background-color: #0078ff;
+      border-radius: 50%;
+      padding: 15px;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .products {
+        flex-direction: column;
+        align-items: center;
+      }
+      .product {
+        width: 80%;
+      }
     }
   </style>
 </head>
 <body>
-
-  <!-- 輪播圖區塊 -->
-  <div id="bannerCarousel" class="carousel slide" data-ride="carousel">
-    <ol class="carousel-indicators">
-      <li data-target="#bannerCarousel" data-slide-to="0" class="active"></li>
-      <li data-target="#bannerCarousel" data-slide-to="1"></li>
-    </ol>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="https://via.placeholder.com/1200x400?text=Banner+1" class="d-block w-100" alt="Banner 1">
-      </div>
-      <div class="carousel-item">
-        <img src="https://via.placeholder.com/1200x400?text=Banner+2" class="d-block w-100" alt="Banner 2">
-      </div>
-    </div>
-    <a class="carousel-control-prev" href="#bannerCarousel" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">上一張</span>
-    </a>
-    <a class="carousel-control-next" href="#bannerCarousel" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">下一張</span>
-    </a>
+  <div class="header">
+    <h1>一頁式購物網站</h1>
   </div>
 
-  <!-- 商品區塊 -->
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col-md-6">
-        <div class="card mb-4">
-          <img src="https://via.placeholder.com/500x300?text=Product+1" class="card-img-top" alt="Product 1">
-          <div class="card-body">
-            <h5 class="card-title">產品名稱 1</h5>
-            <p class="card-text">這是一個很棒的產品，具有優秀的功能和品質。</p>
-            <p class="card-text"><strong>價格: NT$999</strong></p>
-            <a href="#" class="btn btn-primary">購買</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card mb-4">
-          <img src="https://via.placeholder.com/500x300?text=Product+2" class="card-img-top" alt="Product 2">
-          <div class="card-body">
-            <h5 class="card-title">產品名稱 2</h5>
-            <p class="card-text">這款產品以其卓越的設計和實用性備受推崇。</p>
-            <p class="card-text"><strong>價格: NT$1299</strong></p>
-            <a href="#" class="btn btn-primary">購買</a>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- BANNER -->
+  <div class="carousel">
+    <img src="banner1.jpg" alt="Banner 1">
+    <img src="banner2.jpg" alt="Banner 2">
+  </div>
 
-    <!-- 購買紀錄框 -->
-    <div class="purchase-records">
-      <ul id="purchase-list">
-        <!-- JavaScript 會動態填充 100 條紀錄 -->
-      </ul>
+  <!-- 商品展示 -->
+  <div class="products">
+    <div class="product">
+      <img src="product1.jpg" alt="Product 1">
+      <div class="price">價格: 350</div>
+      <div class="desc">這是一個LINE帳號</div>
+      <button>立即購買</button>
+    </div>
+    <div class="product">
+      <img src="product2.jpg" alt="Product 2">
+      <div class="price">價格: 150</div>
+      <div class="desc">這是一個TELEGRAM帳號</div>
+      <button>立即購買</button>
     </div>
   </div>
 
-  <!-- 訪客計數器 & 購買紀錄滾動效果 -->
+  <!-- 購買紀錄 -->
+  <div class="purchase-records" id="purchaseRecords">
+    <h3>購買紀錄</h3>
+    <!-- 購買紀錄會自動滾動顯示 -->
+  </div>
+
+  <!-- 頁腳 -->
+  <div class="footer">
+    <p>© 2025 你的公司名稱. 版權所有。</p>
+    <div class="counter" id="visitorCount"></div>
+  </div>
+
+  <!-- Messenger客服圖標 -->
+  <div class="messenger-icon">
+    <span>📱</span>
+  </div>
+
   <script>
-    // 訪客計數器
-    if (localStorage.getItem('visitCount')) {
-      let count = parseInt(localStorage.getItem('visitCount')) + 1;
-      localStorage.setItem('visitCount', count);
-      document.getElementById('visitor-counter').textContent = count;
-    } else {
-      localStorage.setItem('visitCount', 1);
-      document.getElementById('visitor-counter').textContent = 1;
-    }
-
-    // 生成 100 條購買紀錄
-    const purchaseData = [];
-    const accountTypes = ["LINE帳號", "TELEGRAM帳號"];
-    function getRandomDate() {
-      const year = Math.floor(Math.random() * 10) + 2015;
-      const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
-      const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
-      return `${year}${month}${day}`;
-    }
-
-    for (let i = 1; i <= 100; i++) {
-      let username = "user" + Math.floor(Math.random() * 10000);
-      let accountType = accountTypes[Math.floor(Math.random() * accountTypes.length)];
-      let date = getRandomDate();
-      purchaseData.push(`${date} --- ${username} --- ${accountType} --- 350`);
-    }
-
-    // 排序購買紀錄（按日期由新到舊）
-    purchaseData.sort((a, b) => {
-      return b.split(" --- ")[0].localeCompare(a.split(" --- ")[0]);
-    });
-
-    // 動態插入購買紀錄
-    const purchaseList = document.getElementById('purchase-list');
-    purchaseList.innerHTML = purchaseData.map((record, index) => {
-      return `<li>${index + 1}. ${record}</li>`;
-    }).join('');
-
-    // 購買紀錄滾動效果
-    function scrollRecords() {
-      const first = purchaseList.firstElementChild;
-      if (first) {
-        purchaseList.appendChild(first.cloneNode(true));
-        purchaseList.removeChild(first);
+    // 購買紀錄資料生成
+    function generateRecords() {
+      const products = ["LINE帳號", "TELEGRAM帳號"];
+      const users = ["savecocotw", "andyliu", "hello5432", "xiaomeng", "tonyblaze", "john123", "janeDoe", "carter51", "lucy_boy", "maxwells"];
+      let records = [];
+      for (let i = 0; i < 164; i++) {
+        const date = new Date();
+        date.setFullYear(2020 + Math.floor(Math.random() * 5)); // 隨機年份
+        date.setMonth(Math.floor(Math.random() * 12)); // 隨機月份
+        date.setDate(Math.floor(Math.random() * 28) + 1); // 隨機日期
+        const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
+        const user = users[Math.floor(Math.random() * users.length)];
+        const product = products[Math.floor(Math.random() * products.length)];
+        const price = product === "LINE帳號" ? 350 : 150;
+        records.push(`${i+1}. ${formattedDate} --- ${user} --- ${product} --- ${price}`);
       }
+      return records.sort((a, b) => b.split(' --- ')[0].localeCompare(a.split(' --- ')[0])); // 根據時間排序
     }
-    setInterval(scrollRecords, 1500);
+
+    // 顯示購買紀錄
+    function displayRecords() {
+      const records = generateRecords();
+      const recordsContainer = document.getElementById("purchaseRecords");
+      records.forEach(record => {
+        const div = document.createElement("div");
+        div.classList.add("record");
+        div.innerText = record;
+        recordsContainer.appendChild(div);
+      });
+      recordsContainer.scrollTop = recordsContainer.scrollHeight; // 滾動到底部
+    }
+
+    // 訪問計數器
+    let visitCount = 0;
+    function updateVisitorCount() {
+      visitCount += 1;
+      document.getElementById("visitorCount").innerText = `網站訪問次數：${visitCount}`;
+    }
+
+    // 初始化
+    window.onload = () => {
+      displayRecords();
+      updateVisitorCount();
+      setInterval(updateVisitorCount, 60000); // 每分鐘更新一次訪問次數
+    };
   </script>
-
-  <!-- 頁腳區塊 -->
-  <footer class="bg-light text-center py-3 mt-4">
-    <div class="container">
-      <p class="mb-0">&copy; 2025 版權所有</p>
-      <p class="mt-2">訪客人數: <span id="visitor-counter">0</span></p>
-    </div>
-  </footer>
-
-  <!-- LINE 客服圖標 -->
-  <a href="https://line.me/R/ti/p/%40yourlineid" target="_blank" class="line-customer-service">
-    <img src="https://via.placeholder.com/50x50?text=LINE" alt="LINE 客服" style="width:50px; height:50px;">
-  </a>
 
 </body>
 </html>
