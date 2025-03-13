@@ -7,7 +7,7 @@
   <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
-    /* 基本樣式 */
+    /* 全站基本樣式 */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -20,12 +20,16 @@
       background-color: #333;
       color: #fff;
     }
+    /* 內容容器，限制最大寬度並置中 */
+    .content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
     /* BANNER 輪播 */
     .carousel {
-      width: 100%;
-      max-width: 1200px;
-      margin: 20px auto;
       overflow: hidden;
+      margin-bottom: 20px;
     }
     .carousel img {
       width: 100%;
@@ -37,8 +41,8 @@
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
-      padding: 20px;
       gap: 20px;
+      margin-bottom: 20px;
     }
     .product {
       width: 45%;
@@ -71,12 +75,9 @@
       cursor: pointer;
     }
     /* 購買紀錄區
-       設定固定高度以顯示約10條紀錄，
-       利用 CSS transform 反轉容器，再由 JavaScript 自動滾動使紀錄呈現由上往下的效果 */
+       利用 transform 反轉容器，再由 JavaScript 自動滾動實現由上往下滾動的效果 */
     .purchase-records {
-      width: 100%;
-      height: 300px;  /* 視實際行高調整 */
-      margin: 20px auto;
+      height: 300px;  /* 可依據實際顯示條數調整 */
       background-color: #f8f8f8;
       border-top: 1px solid #ccc;
       overflow: hidden;
@@ -95,7 +96,7 @@
       margin: 5px 0;
       border: 1px solid #ddd;
       border-radius: 5px;
-      transform: scaleY(-1);  /* 反轉回來，文字正向 */
+      transform: scaleY(-1);  /* 反轉回正 */
     }
     /* 頁腳 */
     .footer {
@@ -138,32 +139,34 @@
     <h1>一頁式購物網站</h1>
   </div>
 
-  <!-- BANNER 輪播圖 -->
-  <div class="carousel">
-    <img src="banner1.jpg" alt="Banner 1">
-    <img src="banner2.jpg" alt="Banner 2">
-  </div>
-
-  <!-- 商品展示 -->
-  <div class="products">
-    <div class="product">
-      <img src="product1.jpg" alt="Product 1">
-      <div class="price">價格: 350</div>
-      <div class="desc">這是一個LINE帳號</div>
-      <button>立即購買</button>
+  <div class="content">
+    <!-- BANNER 輪播圖 -->
+    <div class="carousel">
+      <img src="banner1.jpg" alt="Banner 1">
+      <img src="banner2.jpg" alt="Banner 2">
     </div>
-    <div class="product">
-      <img src="product2.jpg" alt="Product 2">
-      <div class="price">價格: 150</div>
-      <div class="desc">這是一個TELEGRAM帳號</div>
-      <button>立即購買</button>
-    </div>
-  </div>
 
-  <!-- 購買紀錄區 -->
-  <div class="purchase-records" id="purchaseRecords">
-    <div class="records-wrapper" id="recordsWrapper">
-      <!-- 164筆購買紀錄將會在這裡產生 -->
+    <!-- 商品展示 -->
+    <div class="products">
+      <div class="product">
+        <img src="product1.jpg" alt="Product 1">
+        <div class="price">價格: 350</div>
+        <div class="desc">這是一個LINE帳號</div>
+        <button>立即購買</button>
+      </div>
+      <div class="product">
+        <img src="product2.jpg" alt="Product 2">
+        <div class="price">價格: 150</div>
+        <div class="desc">這是一個TELEGRAM帳號</div>
+        <button>立即購買</button>
+      </div>
+    </div>
+
+    <!-- 購買紀錄區 -->
+    <div class="purchase-records" id="purchaseRecords">
+      <div class="records-wrapper" id="recordsWrapper">
+        <!-- 164 筆購買紀錄會產生在這裡 -->
+      </div>
     </div>
   </div>
 
@@ -179,7 +182,7 @@
   </div>
 
   <script>
-    // 產生不重複的隨機帳號名 (8碼字母數字組合)
+    // 產生不重複的隨機帳號名 (8碼字母與數字組合)
     function generateUniqueUsername(existing) {
       const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
       let username;
@@ -194,14 +197,13 @@
       return username;
     }
 
-    // 生成 164 筆購買紀錄，序號為三位數，日期隨機，並依日期排序(最新在前)
+    // 生成 164 筆購買紀錄，序號為三位數，日期隨機 (2020~2024)，並依日期排序 (最新在前)
     function generateRecords() {
       const products = ["LINE帳號", "TELEGRAM帳號"];
       let existingUsernames = new Set();
       let records = [];
       for (let i = 0; i < 164; i++) {
         let date = new Date();
-        // 隨機產生 2020 到 2024 年的日期
         date.setFullYear(2020 + Math.floor(Math.random() * 5));
         date.setMonth(Math.floor(Math.random() * 12));
         date.setDate(Math.floor(Math.random() * 28) + 1);
@@ -212,7 +214,7 @@
         let serial = (i + 1).toString().padStart(3, '0');  // 三位數序號
         records.push(`${serial}.${formattedDate} --- ${username} --- ${product} --- ${price}`);
       }
-      // 依日期排序：從第5個字元開始取8個字元（即日期部分），數值較大的排在前面
+      // 依日期排序：取出日期部分，數值較大的排在前面
       records.sort((a, b) => {
         let dateA = parseInt(a.substring(4, 12));
         let dateB = parseInt(b.substring(4, 12));
@@ -221,7 +223,7 @@
       return records;
     }
 
-    // 將生成的購買紀錄全部插入 records-wrapper 中
+    // 將生成的購買紀錄插入 records-wrapper 中
     function displayRecords() {
       const records = generateRecords();
       const wrapper = document.getElementById("recordsWrapper");
@@ -233,9 +235,7 @@
       });
     }
 
-    // 自動滾動購買紀錄：利用 setInterval 持續更新 container 的 scrollTop
-    // 因 purchase-records 容器已反轉 (scaleY(-1))，
-    // 正常增加 scrollTop 會使內容視覺上由上往下移動
+    // 自動滾動購買紀錄 (容器已反轉，scrollTop 累加會使內容視覺上由上往下移動)
     function startAutoScroll() {
       const container = document.getElementById("purchaseRecords");
       const wrapper = document.getElementById("recordsWrapper");
@@ -249,7 +249,7 @@
       }, 20);
     }
 
-    // 簡易訪問計數器 (每分鐘更新一次)
+    // 訪問計數器 (每分鐘更新一次)
     let visitCount = 0;
     function updateVisitorCount() {
       visitCount++;
@@ -260,7 +260,7 @@
       displayRecords();
       startAutoScroll();
       updateVisitorCount();
-      setInterval(updateVisitorCount, 60000); // 每分鐘更新一次計數
+      setInterval(updateVisitorCount, 60000);
     };
   </script>
 </body>
