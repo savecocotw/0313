@@ -92,6 +92,7 @@
   <footer class="bg-light text-center py-3 mt-4">
     <div class="container">
       <p class="mb-0">&copy; 2025 喜歡就來買 版權所有</p>
+      <p class="mt-2">訪客人數: <span id="visitor-counter">0</span></p>
     </div>
   </footer>
 
@@ -99,6 +100,17 @@
   <a href="https://m.me/savecocotw" target="_blank" class="line-customer-service">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Facebook_Messenger_logo_2020.svg/512px-Facebook_Messenger_logo_2020.svg.png" alt="線上客服" style="width:50px; height:50px;">
   </a>
+  <!-- 訪客計數器 JavaScript -->
+  <script>
+    if (localStorage.getItem('visitCount')) {
+      let count = parseInt(localStorage.getItem('visitCount')) + 1;
+      localStorage.setItem('visitCount', count);
+      document.getElementById('visitor-counter').textContent = count;
+    } else {
+      localStorage.setItem('visitCount', 1);
+      document.getElementById('visitor-counter').textContent = 1;
+    }
+  </script>
 
   <!-- 載入 Bootstrap JS 及相依的 jQuery 和 Popper.js -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
