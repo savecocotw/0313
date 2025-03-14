@@ -99,7 +99,7 @@
       cursor: pointer;
     }
     
-    /* 購買紀錄容器（獨立容器，寬度與商品區合計寬度一致） */
+    /* 購買紀錄容器 */
     .records-container {
       width: calc(100% - 20px);
       margin: 20px auto;
@@ -122,7 +122,7 @@
     /* 頁腳 */
     .footer-counter { margin-top: 10px; font-size: 14px; }
     
-    /* 右下懸浮客服（使用圖片） */
+    /* 右下懸浮客服 */
     .messenger-icon {
       position: fixed;
       bottom: 20px;
@@ -146,7 +146,6 @@
     <div class="banner-container">
       <div class="carousel">
         <div class="slides">
-          <!-- 使用你提供的圖片網址 -->
           <img src="https://i.imgur.com/rf9t7d4.png" alt="Banner 1">
           <img src="https://i.imgur.com/C8lQgS5.png" alt="Banner 2">
         </div>
@@ -157,14 +156,12 @@
     <div class="products">
       <!-- 產品 1 -->
       <div class="product" id="product1">
-        <!-- 產品圖片區塊 (1:1) -->
         <div class="product-img">
           <img src="https://via.placeholder.com/300?text=Facebook+帳號" alt="Facebook 帳號">
         </div>
         <h3>Facebook 帳號</h3>
         <p>提供優質 Facebook 社群平台帳號，適用於各種行銷需求。</p>
         <div class="price">NT$350</div>
-        <!-- 購買按鈕 -->
         <button class="buy-btn" onclick="window.location.href='https://m.me/savecocotw'">購買</button>
         <div class="share">
           分享:
@@ -215,7 +212,7 @@
     <div class="footer-counter">訪問計數: <span id="counter">0</span></div>
   </footer>
   
-  <!-- 右下懸浮客服：使用圖片連結至 Messenger -->
+  <!-- 右下懸浮客服 -->
   <a href="https://m.me/savecocotw" class="messenger-icon" target="_blank">
     <img src="https://via.placeholder.com/50x50?text=客服" alt="Messenger客服" style="width:50px; height:50px;">
   </a>
@@ -234,7 +231,7 @@
       }
       setInterval(showNextSlide, 3000);
       
-      // 分享功能：嘗試附帶產品圖片
+      // 分享功能
       function shareProduct(productName, imageUrl, platform) {
         const shareText = '看看這個產品：' + productName;
         console.log("嘗試分享：" + productName + ", 圖片：" + imageUrl + ", 平台：" + platform);
@@ -284,8 +281,99 @@
               .catch((error) => { console.error('分享失敗', error); });
           }
         } else {
-          // fallback: 根據平台參數打開各自分享網址
+          // fallback: 根據平台參數開啟各自分享網址
           if(platform === 'facebook') {
             window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(window.location.href), '_blank');
           } else if(platform === 'twitter') {
-            window.open("https://twitter.com/i
+            window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText) + "&url=" + encodeURIComponent(window.location.href), '_blank');
+          } else if(platform === 'line') {
+            window.open("https://social-plugins.line.me/lineit/share?url=" + encodeURIComponent(window.location.href), '_blank');
+          } else {
+            alert('您的瀏覽器不支援分享功能');
+          }
+        }
+      }
+      window.shareProduct = shareProduct;
+      
+      // 產生購買紀錄相關函數
+      function randomDate(start, end) {
+        const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+        const yyyy = date.getFullYear();
+        let mm = date.getMonth() + 1;
+        let dd = date.getDate();
+        mm = mm < 10 ? '0' + mm : mm;
+        dd = dd < 10 ? '0' + dd : dd;
+        return '' + yyyy + mm + dd;
+      }
+      function randomUsername(existing) {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let username;
+        do {
+          username = '';
+          for (let i = 0; i < 8; i++) {
+            username += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+        } while(existing.has(username));
+        existing.add(username);
+        return username;
+      }
+      function generateRecords() {
+        const records = [];
+        const usernames = new Set();
+        for (let i = 1; i <= 164; i++) {
+          const dateStr = randomDate(new Date(2020, 0, 1), new Date(2025, 11, 31));
+          const product = Math.random() > 0.5 ? 'LINE帳號' : 'TELEGRAM帳號';
+          const price = product === 'LINE帳號' ? 350 : 150;
+          const username = randomUsername(usernames);
+          records.push({
+            seq: i,
+            date: dateStr,
+            username: username,
+            product: product,
+            price: price
+          });
+        }
+        records.sort((a, b) => b.date.localeCompare(a.date));
+        return records;
+      }
+      const records = generateRecords();
+      console.log("生成的購買紀錄數量：", records.length);
+      
+      const recordList = document.getElementById('recordList');
+      if (!recordList) {
+        console.error("無法取得 ID 為 recordList 的元素");
+      } else {
+        function formatSeq(num) {
+          return num.toString().padStart(3, '0');
+        }
+        records.forEach((record, index) => {
+          const li = document.createElement('li');
+          li.textContent = formatSeq(index + 1) + '. ' + record.date + ' --- ' + record.username + ' --- ' + record.product + ' --- ' + record.price;
+          recordList.appendChild(li);
+        });
+        console.log("已附加購買紀錄數量：", recordList.childElementCount);
+      }
+      
+      // 自動滾動購買紀錄 (間隔調整為 100 毫秒)
+      const recordContainer = document.querySelector('.purchase-records');
+      function autoScroll() {
+        if (recordContainer.scrollTop >= recordList.scrollHeight - recordContainer.clientHeight) {
+          recordContainer.scrollTop = 0;
+        } else {
+          recordContainer.scrollTop += 1;
+        }
+      }
+      setInterval(autoScroll, 100);
+      
+      // 訪問計數器
+      function updateCounter() {
+        let count = localStorage.getItem('visitCount') || 0;
+        count = parseInt(count) + 1;
+        localStorage.setItem('visitCount', count);
+        document.getElementById('counter').textContent = count;
+      }
+      updateCounter();
+    };
+  </script>
+</body>
+</html>
