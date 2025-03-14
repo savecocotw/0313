@@ -9,96 +9,114 @@
   <title>全球社群平台帳號購物網</title>
   <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <!-- FontAwesome (用於分享、Messenger icon) -->
+  <!-- FontAwesome (用於分享 icon) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
         integrity="sha512-Fo3rlrZj/k7ujTnH4PvK8P9GG5F3jScnN1uEKh6VXWQ8o4V6aQHqBZBf7JXG5jdU3T6vS0fPPD9ebJQeALd9g==" 
         crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    /* 基本重置 */
+    /* Reset */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; }
     header, footer { background: #333; color: #fff; text-align: center; padding: 10px 0; }
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    /* Banner Wrapper 與商品框同寬 */
-    .banner-wrapper {
-      width: calc(50% - 10px);
-      margin-bottom: 20px;
+    
+    /* Banner container：獨立容器，寬度與商品區及購買紀錄容器一致 */
+    .banner-container {
+      width: calc(100% - 20px);
+      margin: 20px auto;
     }
-    /* 輪播圖 */
     .carousel { 
       position: relative; 
       overflow: hidden; 
       width: 100%; 
       max-height: 300px;
     }
-    .carousel .slides { 
-      display: flex; 
-      transition: transform 0.5s ease-in-out; 
+    .carousel .slides {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
     }
-    .carousel img { 
-      width: 100%; 
-      object-fit: cover; 
+    .carousel img {
+      width: 100%;
+      object-fit: cover;
     }
+    
     /* 產品區塊 */
-    .products { 
-      display: flex; 
-      flex-wrap: wrap; 
-      justify-content: space-between; 
-      margin-bottom: 20px; 
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
     .product {
-      background: #fff; 
-      border: 1px solid #ddd; 
-      padding: 15px; 
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 15px;
       margin-bottom: 20px;
       width: calc(50% - 10px);
     }
     .product h3 { margin-bottom: 10px; }
     .product p { margin-bottom: 10px; }
     .product .price { font-size: 1.2em; margin-bottom: 10px; }
-    .product .buy-btn {
-      background: #28a745; color: #fff; border: none; padding: 10px 15px; cursor: pointer;
+    
+    /* 購買按鈕：加入按下特效及連結 */
+    .buy-btn {
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: transform 0.1s ease-in-out;
     }
+    .buy-btn:active {
+      transform: scale(0.95);
+    }
+    
+    /* 分享按鈕 */
     .product .share { margin-top: 10px; }
     .product .share button {
-      background: #007bff; color: #fff; border: none; padding: 5px 8px; margin-right: 5px; cursor: pointer;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 5px 8px;
+      margin-right: 5px;
+      cursor: pointer;
     }
-    /* 購買紀錄容器（獨立一個容器，其寬度與商品框架總寬度相同） */
+    
+    /* 購買紀錄容器（獨立容器，寬度與商品區合計寬度一致） */
     .records-container {
-      width: calc(100% - 20px); /* 商品1+商品2的總寬度 */
-      margin: 20px auto; /* 置中並與上方留間距 */
+      width: calc(100% - 20px);
+      margin: 20px auto;
     }
     .purchase-records {
-      background: #fff; 
-      border: 1px solid #ddd; 
-      padding: 10px; 
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
       overflow: hidden;
       width: 100%;
-      height: 220px; /* 固定高度，約可顯示10筆紀錄 */
+      height: 220px; /* 約顯示 10 筆紀錄 */
     }
     .purchase-records ul { list-style: none; }
     .purchase-records li {
-      padding: 5px 0; 
-      border-bottom: 1px solid #eee; 
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
       font-size: 14px;
     }
+    
     /* 頁腳 */
     .footer-counter { margin-top: 10px; font-size: 14px; }
-    /* Messenger 客服 icon */
+    
+    /* 右下懸浮客服（使用圖片） */
     .messenger-icon {
-      position: fixed; 
-      bottom: 20px; 
+      position: fixed;
+      bottom: 20px;
       right: 20px;
-      background: #0084ff; 
-      border-radius: 50%; 
-      padding: 10px;
-      color: #fff; 
-      cursor: pointer; 
-      font-size: 20px;
+      cursor: pointer;
     }
-    /* 響應式 */
+    
+    /* 響應式設定 */
     @media (max-width: 768px) {
-      .product, .banner-wrapper, .records-container { width: 100%; }
+      .product, .banner-container, .records-container { width: 100%; }
+      .products { flex-direction: column; }
     }
   </style>
 </head>
@@ -107,16 +125,17 @@
     <h1>全球社群平台帳號購物網</h1>
   </header>
   <div class="container">
-    <!-- Banner 輪播 (獨立一列且與商品框同寬) -->
-    <div class="banner-wrapper">
+    <!-- Banner 輪播區塊 -->
+    <div class="banner-container">
       <div class="carousel">
         <div class="slides">
-          <!-- 使用佔位圖片測試 -->
-          <img src="https://i.imgur.com/rf9t7d4.png" alt="savecocotw">
-          <img src="https://i.imgur.com/C8lQgS5.png" alt="savecocotw">
+          <!-- 這裡使用佔位圖片，請根據實際情況替換圖片路徑 -->
+          <img src="https://via.placeholder.com/600x300?text=Banner+1" alt="Banner 1">
+          <img src="https://via.placeholder.com/600x300?text=Banner+2" alt="Banner 2">
         </div>
       </div>
     </div>
+    
     <!-- 商品區塊 -->
     <div class="products">
       <!-- 商品 1 -->
@@ -124,9 +143,8 @@
         <h3>Facebook 帳號</h3>
         <p>提供優質 Facebook 社群平台帳號，適用於各種行銷需求。</p>
         <div class="price">NT$350</div>
-        <a href="https://m.me/savecocotw" target="_blank">
-        <button class="buy-btn">購買</button>
-        </a>
+        <!-- 購買按鈕：加入連結及點擊特效 -->
+        <button class="buy-btn" onclick="window.location.href='https://m.me/savecocotw'">購買</button>
         <div class="share">
           分享:
           <button onclick="shareProduct('Facebook 帳號')"><i class="fab fa-facebook-f"></i></button>
@@ -139,9 +157,7 @@
         <h3>Instagram 帳號</h3>
         <p>專業 Instagram 帳號，助您快速提升社群人氣。</p>
         <div class="price">NT$350</div>
-        <a href="https://m.me/savecocotw" target="_blank">
-        <button class="buy-btn">購買</button>
-        </a>
+        <button class="buy-btn" onclick="window.location.href='https://m.me/savecocotw'">購買</button>
         <div class="share">
           分享:
           <button onclick="shareProduct('Instagram 帳號')"><i class="fab fa-facebook-f"></i></button>
@@ -150,7 +166,8 @@
         </div>
       </div>
     </div>
-    <!-- 購買紀錄區塊（獨立容器） -->
+    
+    <!-- 購買紀錄區塊 -->
     <div class="records-container">
       <div class="purchase-records">
         <ul id="recordList"></ul>
@@ -159,15 +176,16 @@
   </div>
   <footer>
     <div>&copy; 2025 全球社群平台帳號購物網 版權所有</div>
-    <div class="footer-counter">觀看次數: <span id="counter">0</span></div>
+    <div class="footer-counter">訪問計數: <span id="counter">0</span></div>
   </footer>
-  <!-- Messenger 客服圖標 -->
-  <div class="messenger-icon" onclick="openMessenger()">
-    <i class="fab fa-facebook-messenger"></i>
-  </div>
-
+  
+  <!-- 右下懸浮客服：使用圖片，點擊後連結至 Messenger -->
+  <a href="https://m.me/savecocotw" class="messenger-icon" target="_blank">
+    <img src="https://via.placeholder.com/50x50?text=客服" alt="Messenger客服" style="width:50px; height:50px;">
+  </a>
+  
   <script>
-    /* 輪播功能 */
+    // 輪播功能
     let slideIndex = 0;
     const slides = document.querySelector('.slides');
     const totalSlides = slides.children.length;
@@ -176,11 +194,11 @@
       slides.style.transform = 'translateX(' + (-slideIndex * 100) + '%)';
     }
     setInterval(showNextSlide, 3000);
-
-    /* 分享功能 */
+    
+    // 分享功能
     function shareProduct(productName) {
       const shareText = '看看這個產品：' + productName;
-      if(navigator.share) {
+      if (navigator.share) {
         navigator.share({
           title: productName,
           text: shareText,
@@ -194,8 +212,8 @@
         alert('您的瀏覽器不支援分享功能');
       }
     }
-
-    /* 購買紀錄產生 */
+    
+    // 產生購買紀錄
     function randomDate(start, end) {
       const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
       const yyyy = date.getFullYear();
@@ -235,7 +253,7 @@
           price: price
         });
       }
-      // 按日期降序排序（最新日期在前）
+      // 日期降序排序（最新日期在前）
       records.sort((a, b) => b.date.localeCompare(a.date));
       return records;
     }
@@ -245,26 +263,24 @@
     function formatSeq(num) {
       return num.toString().padStart(3, '0');
     }
-    // 將 164 筆購買紀錄全部列出
     records.forEach((record, index) => {
       const li = document.createElement('li');
       li.textContent = formatSeq(index + 1) + '. ' + record.date + ' --- ' + record.username + ' --- ' + record.product + ' --- ' + record.price;
       recordList.appendChild(li);
     });
-
-    /* 購買紀錄自動滾動 */
+    
+    // 購買紀錄自動滾動
     const recordContainer = document.querySelector('.purchase-records');
     function autoScroll() {
-      // 若滾動到最底部則重置
-      if(recordContainer.scrollTop >= recordList.scrollHeight - recordContainer.clientHeight) {
+      if (recordContainer.scrollTop >= recordList.scrollHeight - recordContainer.clientHeight) {
         recordContainer.scrollTop = 0;
       } else {
         recordContainer.scrollTop += 1;
       }
     }
     setInterval(autoScroll, 50);
-
-    /* 訪問計數器 (使用 localStorage 模擬) */
+    
+    // 訪問計數器 (利用 localStorage 模擬)
     function updateCounter() {
       let count = localStorage.getItem('visitCount') || 0;
       count = parseInt(count) + 1;
@@ -272,12 +288,6 @@
       document.getElementById('counter').textContent = count;
     }
     updateCounter();
-
-    /* Messenger 客服功能 */
-    function openMessenger() {
-      // 請將此處連結替換為實際的 Messenger 粉絲專頁連結
-      window.open('https://m.me/savecocotw', '_blank');
-    }
   </script>
 </body>
 </html>
