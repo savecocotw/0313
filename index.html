@@ -168,9 +168,10 @@
         <button class="buy-btn" onclick="window.location.href='https://m.me/savecocotw'">購買</button>
         <div class="share">
           分享:
-          <button onclick="shareProduct('Facebook 帳號')"><i class="fab fa-facebook-f"></i></button>
-          <button onclick="shareProduct('Facebook 帳號')"><i class="fab fa-twitter"></i></button>
-          <button onclick="shareProduct('Facebook 帳號')"><i class="fab fa-line"></i></button>
+          <!-- 傳入產品名稱與圖片 URL -->
+          <button onclick="shareProduct('Facebook 帳號', 'https://via.placeholder.com/300?text=Facebook+帳號')"><i class="fab fa-facebook-f"></i></button>
+          <button onclick="shareProduct('Facebook 帳號', 'https://via.placeholder.com/300?text=Facebook+帳號')"><i class="fab fa-twitter"></i></button>
+          <button onclick="shareProduct('Facebook 帳號', 'https://via.placeholder.com/300?text=Facebook+帳號')"><i class="fab fa-line"></i></button>
         </div>
       </div>
       <!-- 商品 2 -->
@@ -184,9 +185,9 @@
         <button class="buy-btn" onclick="window.location.href='https://m.me/savecocotw'">購買</button>
         <div class="share">
           分享:
-          <button onclick="shareProduct('Instagram 帳號')"><i class="fab fa-facebook-f"></i></button>
-          <button onclick="shareProduct('Instagram 帳號')"><i class="fab fa-twitter"></i></button>
-          <button onclick="shareProduct('Instagram 帳號')"><i class="fab fa-line"></i></button>
+          <button onclick="shareProduct('Instagram 帳號', 'https://via.placeholder.com/300?text=Instagram+帳號')"><i class="fab fa-facebook-f"></i></button>
+          <button onclick="shareProduct('Instagram 帳號', 'https://via.placeholder.com/300?text=Instagram+帳號')"><i class="fab fa-twitter"></i></button>
+          <button onclick="shareProduct('Instagram 帳號', 'https://via.placeholder.com/300?text=Instagram+帳號')"><i class="fab fa-line"></i></button>
         </div>
       </div>
     </div>
@@ -219,19 +220,51 @@
     }
     setInterval(showNextSlide, 3000);
     
-    // 分享功能
-    function shareProduct(productName) {
+    // 分享功能，嘗試將產品圖片一併分享
+    function shareProduct(productName, imageUrl) {
       const shareText = '看看這個產品：' + productName;
-      if (navigator.share) {
+      // 若支援分享檔案且提供 imageUrl，嘗試抓取圖片
+      if (navigator.canShare && imageUrl) {
+        fetch(imageUrl)
+          .then(response => response.blob())
+          .then(blob => {
+            const file = new File([blob], "product.jpg", { type: blob.type });
+            const shareData = {
+              title: productName,
+              text: shareText,
+              files: [file]
+            };
+            if (navigator.canShare(shareData)) {
+              navigator.share(shareData)
+                .then(() => { console.log('分享成功'); })
+                .catch((error) => { console.error('分享失敗', error); });
+            } else {
+              // 無法分享檔案時，退回純文字與連結分享
+              navigator.share({
+                title: productName,
+                text: shareText,
+                url: window.location.href
+              }).then(() => { console.log('分享成功'); })
+                .catch(error => { console.error('分享失敗', error); });
+            }
+          })
+          .catch((error) => {
+            console.error('無法取得圖片', error);
+            // 取得圖片失敗，退回純文字與連結分享
+            navigator.share({
+              title: productName,
+              text: shareText,
+              url: window.location.href
+            }).then(() => { console.log('分享成功'); })
+              .catch(error => { console.error('分享失敗', error); });
+          });
+      } else if (navigator.share) {
         navigator.share({
           title: productName,
           text: shareText,
           url: window.location.href
-        }).then(() => {
-          console.log('分享成功');
-        }).catch((error) => {
-          console.error('分享失敗', error);
-        });
+        }).then(() => { console.log('分享成功'); })
+          .catch((error) => { console.error('分享失敗', error); });
       } else {
         alert('您的瀏覽器不支援分享功能');
       }
